@@ -76,10 +76,12 @@ router.get('/:id', async (req,res) =>{
 
 //POST /hamsters
 router.post('/', async (req, res) => {
+	
 
 	//express.json måste vara installerat
 	const object = req.body
 
+	
 
 	if( !isHamsterObject(object) ) {
 		res.sendStatus(400)
@@ -92,45 +94,94 @@ router.post('/', async (req, res) => {
 	
 })
 
-// PUT /hamsters/:id
-router.put('/:id', async (req, res) => {
-	const object = req.body
-	const id = req.params.id
-
-	if( !object ||!id ) {
-		res.sendStatus(400)
-		return
-	}
-
-	//Todo, kontrollera att objektet finns i databasen
-
-	const docRef =db.collection('hamsters').doc(id)
-
-	await db.collection('hamsters').doc(id).set(object, {merge: true })
-	res.sendStatus(200)
-})
-
 function isHamsterObject(maybeObject) {
 	if( !maybeObject ) 
 	return false
 
 	return true
 }
-// DELETE /hamsters/:id
-router.delete('/:id', async (req, res) => {
-	const id = req.params.id
 
+
+//PUT /hamsters/:id
+router.put('/:id', async (req, res) => {
+
+const id = req.params.id;
+	const object = req.body;
 	
-	if ( !id ) {
-		res.sendStatus(400)
-		return
+
+	if(!object || !id) {
+		res.sendStatus(400);
+		return;
 	}
 
-	await db.collection('hamsters').doc(id).delete()
-	res.sendStatus(200)
+	const docRef = db.collection('hamsters').doc(id);
+	let hamsterRef;
 
+	try {
+		hamsterRef = await docRef.get();
+		
+	}
+
+	catch(error) {
+		res.status(500).send(error.message);
+		return;
+	}
+
+	if(!hamsterRef.exists) {
+		res.status(404).send("Whops! Hamster not found.");
+		return;
+	}
+
+	try {
+		await docRef.set(object, { merge: true });
+		res.sendStatus(200);
+	}
+
+	catch(error) {
+		res.status(500).send(error.message);
+	}
 })
 
 
+ //DELETE /hamsters/:id
+router.delete('/:id', async (req, res) => {
 
+const id = req.params.id;
+
+	if(!id) {
+		res.sendStatus(400);
+		return;
+	}
+
+	let docRef;
+
+	try {
+		docRef = await db.collection('hamsters').doc(id).get();
+	}
+
+	catch(error) {
+		res.status(500).send(error.message);
+		return;
+	}
+
+	if(!docRef.exists) {
+		// res.status(404).send(Whops! Hamster not found.);
+		res.sendStatus(404);
+		return;
+	}
+
+	try {
+		await db.collection('hamsters').doc(id).delete()
+		res.sendStatus(200);
+	}
+
+	catch(error) {
+		res.status(500).send(error.message);
+	} 
+});
+
+
+
+
+  
 module.exports = router
