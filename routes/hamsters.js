@@ -188,7 +188,6 @@ const id = req.params.id;
 	}
 
 	if(!docRef.exists) {
-		// res.status(404).send(Whops! Hamster not found.);
 		res.sendStatus(404);
 		return;
 	}

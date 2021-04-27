@@ -3,6 +3,7 @@ const app = express()
 const cors = require('cors')
 const path = require('path')
 const hamsters = require('./routes/hamsters.js')
+const matches = require('./routes/matches.js')
  
 //Heroku - Om PORT är ett värde/number så kommer vi använda den annars 1337
 const PORT = process.env.PORT || 1337
@@ -26,8 +27,9 @@ app.get('/', (req, res) => {
     res.send('Hamsterwars - Fullstack Project')
 })
  
-// REST API för hamsters
+// REST API för hamsters & matches
 app.use('/hamsters', hamsters)
+app.use('/matches', matches)
  
 //startar servern
 app.listen(PORT, () => {
