@@ -6,6 +6,7 @@ const hamsters = require('./routes/hamsters.js')
 const matches = require('./routes/matches.js')
 const matchWinners = require('./routes/matchWinners.js')
 const winners = require('./routes/winners.js')
+const losers = require('./routes/losers.js')
  
 //Heroku - Om PORT är ett värde/number så kommer vi använda den annars 1337
 const PORT = process.env.PORT || 1337
@@ -34,6 +35,7 @@ app.use('/hamsters', hamsters)
 app.use('/matches', matches)
 app.use('/matchWinners', matchWinners)
 app.use('/winners', winners)
+app.use('/losers', losers)
  
 //startar servern
 app.listen(PORT, () => {

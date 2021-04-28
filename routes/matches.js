@@ -51,7 +51,7 @@ router.get('/', async (req, res) => {
 	}
 	});
 
-//POST /hamsters
+//POST /matches
 router.post('/', async (req, res) => {
 	try {
 
@@ -76,7 +76,7 @@ router.post('/', async (req, res) => {
 }
 })
 
- //DELETE /hamsters/:id
+ //DELETE /matches/:id
  router.delete('/:id', async (req, res) => {
 
 	const id = req.params.id;
