@@ -1,31 +1,27 @@
 const getDatabase = require('../database.js')
 const db = getDatabase()
-
 const express = require('express')
 const router = express.Router()
 
-
 // GET /winners
 router.get('/', async (req, res) => {
-	// let result;
 	try {
-
 		const hamsterRef = db.collection('hamsters');
 
-		
-		const snapshot = await hamsterRef.where('wins', '>', 0).orderBy('wins', 'desc').limit(5).get();
-	// result = await db.collection('hamsters').orderBy('wins', 'desc').limit(5).get();
+		const snapshot = await hamsterRef.orderBy('wins', 'desc').limit(5).get();
 
-	const topFive = [];
-	snapshot.forEach(doc => {
-	topFive.push(doc.data());
-	});
+		const topFiveWinners = [];
+
+		snapshot.forEach(doc => {
+			topFiveWinners.push(doc.data());
+		});
 	 
-	res.send(topFive);
-	}
+		res.send(topFiveWinners);
+		}
 	
 	catch(err) {
-	console.log(err.message);
-	}})
+		console.log(err.message);
+	}
+})
 
 module.exports = router

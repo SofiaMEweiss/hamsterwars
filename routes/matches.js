@@ -1,115 +1,93 @@
 const getDatabase = require('../database.js')
 const db = getDatabase()
-
 const express = require('express')
 const router = express.Router()
 
 // GET /matches
 router.get('/', async (req, res) => {
-	//	console.log('/hamster REST API');
-	//	res.send('/hamsters REST API') 
 	try {
-	const matchesRef = db.collection('matches')
-	const snapshot = await matchesRef.get()
+		const matchesRef = db.collection('matches')
+		const snapshot = await matchesRef.get()
 	
-	if ( snapshot.empty) {
-		// res.send([])
-		res.status(404).send("Could not find any matches.")
-		return
-	}
+		if ( snapshot.empty) {
+			res.status(404).send("Could not find any matches.")
+			return
+		}
 	
-	let items = []
-	snapshot.forEach(doc => {
-		const data = doc.data()
-		data.id = doc.id // id behövs för POST + PUT + DELETE
-		items.push( data )
-	
-	})
-	res.send(items)
+		let matchItems = []
+		snapshot.forEach(doc => {
+			const data = doc.data()
+			data.id = doc.id // id behövs för POST + DELETE
+			matchItems.push( data )
+		})
+
+		res.send(matchItems)
+
 	} catch (err) {
 		res.status(500).send(err.message)
 	}
-	
-	
-	})
+})
 
-	router.get('/:id', async (req,res) =>{
-		try {
+// GET /matches/:id
+router.get('/:id', async (req,res) =>{
+	try {
 		const id = req.params.id
 		const docRef = await db.collection('matches').doc(id).get()
 	
 		if( !docRef.exists ) {
 			res.status(404).send(`Match with id: ${id} does not exist`)
 			return
-	
 		}
 	
 		const data = docRef.data()
 		res.send(data)
+
 	} catch (err) {
 		res.status(500).send(err.message)
 	}
-	});
+});
 
 //POST /matches
 router.post('/', async (req, res) => {
 	try {
+		const object = req.body
 
-	//express.json måste vara installerat
-	const object = req.body
-
-	//kontrollera om hamstern finns???
-	if(!object.winnerId || !object.loserId) {
-		res.sendStatus(400)
-		return
+		if(!object.winnerId || !object.loserId) {
+			res.sendStatus(400)
+			return
 		}
 
-	// if( !isHamsterObject(object) ) {
-	// 	res.sendStatus(400)
-	// 	return
-
-	const docRef = await db.collection('matches').add(object)
-	const idObj = { id: docRef.id }
-	res.send(idObj)
-} catch (err) {
-	res.status(500).send(err.message)
-}
+		const docRef = await db.collection('matches').add(object)
+		const idObj = { id: docRef.id }
+		res.send(idObj)
+	} catch (err) {
+		res.status(500).send(err.message)
+	}
 })
 
  //DELETE /matches/:id
  router.delete('/:id', async (req, res) => {
-
-	const id = req.params.id;
+	try {
+		const id = req.params.id;
 	
 		if(!id) {
 			res.sendStatus(400);
 			return;
 		}
 	
-		let docRef;
-	
-		try {
-			docRef = await db.collection('matches').doc(id).get();
-		}
-	
-		catch(error) {
-			res.status(500).send(error.message);
-			return;
-		}
-	
+		const docRef = await db.collection('matches').doc(id).get();
+
 		if(!docRef.exists) {
 			res.sendStatus(404);
 			return;
 		}
 	
-		try {
-			await db.collection('matches').doc(id).delete()
+		await db.collection('matches').doc(id).delete()
 			res.sendStatus(200);
-		}
-	
-		catch(error) {
-			res.status(500).send(error.message);
+
+	} catch(err) {
+			res.status(500).send(err.message);
 		} 
-	});
+});
  
 module.exports = router

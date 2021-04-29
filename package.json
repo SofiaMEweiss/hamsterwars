@@ -1,7 +1,7 @@
 {
   "name": "hamsterwars",
   "version": "1.0.0",
-  "description": "hamsterwars project",
+  "description": "Fullstack project",
   "main": "index.js",
   "scripts": {
     "start": "node server.js"
